@@ -4,8 +4,9 @@
 
 package com.rackspacecloud.client.cloudfiles;
 
-import java.util.Properties;
 import java.io.IOException;
+import java.util.Properties;
+
 import org.apache.log4j.Logger;
 
 public class FilesConstants
@@ -13,11 +14,11 @@ public class FilesConstants
     private static Logger logger = Logger.getLogger(FilesConstants.class);
     
     public static final String USER_AGENT = "java-cloudfiles/1.9.2";
-    
+
     /** HTTP Header token that identifies the username to Cloud Files **/
-    public static final String X_STORAGE_USER_DEFAULT   = "x-auth-user";
+    public static final String X_STORAGE_USER_DEFAULT   = "X-Auth-User";
     /** HTTP header token that identifies the password to Cloud Files **/
-    public static final String X_STORAGE_PASS_DEFAULT   = "x-auth-key";
+    public static final String X_STORAGE_PASS_DEFAULT   = "X-Auth-Key";
     /** HTTP header token that identifies the Storage URL after a successful user login to Cloud Files **/
     public static final String X_STORAGE_URL    = "X-Storage-Url";
     /** HTTP header that identifies the CDN Management URL after a successful login to Cloud Files **/

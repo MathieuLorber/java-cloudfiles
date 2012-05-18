@@ -1,13 +1,22 @@
-In order to build:
+This fork is an extract of the client lib classes, without sample. The goal is to use it as a lib with Maven.
 
-1)  Download the repository (which if you're doing this, you already have)
-2)  type "ant compile" (or "ant package" if you'd like the full package)
+In order to build :
+mvn clean install
 
-In order to run unit tests
+*Please let me know if you are interested*, for the moment it's a little rework I refactor for my needs.
 
-1) Edit the file src/test/resource/cloudfiles.properties, changing the 
-   username and password as needed
-2) run "ant test" to run the unit tests
-3) run "ant test-report" if you'd like to create a handy-dandy html report 
-   on the tests.
+To set as dependency in a POM :
+	<dependencies>
+		<dependency>
+			<artifactId>java-cloudfiles</artifactId>
+			<groupId>com.rackspacecloud</groupId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 
+	<repositories>
+		<repository>
+			<id>Mlorber personal repo</id>
+			<url>http://www.mlorber.net/maven_repo</url>
+		</repository>
+	</repositories>

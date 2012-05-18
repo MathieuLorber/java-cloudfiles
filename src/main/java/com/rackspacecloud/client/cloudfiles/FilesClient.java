@@ -148,23 +148,16 @@ public class FilesClient {
 		this.username = username;
 		this.password = password;
 		this.account = account;
-		if (authUrl == null) {
-			authUrl = FilesUtil.getProperty("auth_url");
-		}
-		if (account != null && account.length() > 0) {
-			this.authenticationURL = authUrl + VERSION + "/" + account + FilesUtil.getProperty("auth_url_post");
-		} else {
-			this.authenticationURL = authUrl;
-		}
+		this.authenticationURL = authUrl;
 		this.connectionTimeOut = connectionTimeOut;
 
 		setUserAgent(FilesConstants.USER_AGENT);
+	}
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("UserName: " + this.username);
-			logger.debug("AuthenticationURL: " + this.authenticationURL);
-			logger.debug("ConnectionTimeOut: " + this.connectionTimeOut);
-		}
+	public FilesClient(HttpClient client, String username, String password, String authUrl, String account, int connectionTimeOut,
+			String userAgent) {
+		this(username, password, authUrl, account, connectionTimeOut);
+		setUserAgent(userAgent);
 	}
 
 	/**
@@ -178,7 +171,15 @@ public class FilesClient {
 	 *            The connection timeout, in ms.
 	 */
 	public FilesClient(String username, String password, String authUrl, String account, final int connectionTimeOut) {
-		this(new DefaultHttpClient() {
+		this(createHttpClient(connectionTimeOut), username, password, authUrl, account, connectionTimeOut);
+	}
+
+	public FilesClient(String username, String password, String authUrl, String account, final int connectionTimeOut, String userAgent) {
+		this(createHttpClient(connectionTimeOut), username, password, authUrl, account, connectionTimeOut, userAgent);
+	}
+
+	private static DefaultHttpClient createHttpClient(final int connectionTimeOut) {
+		return new DefaultHttpClient() {
 			@Override
 			protected HttpParams createHttpParams() {
 				BasicHttpParams params = new BasicHttpParams();
@@ -194,45 +195,7 @@ public class FilesClient {
 				schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
 				return new ThreadSafeClientConnManager(createHttpParams(), schemeRegistry);
 			}
-		}, username, password, authUrl, account, connectionTimeOut);
-
-	}
-
-	/**
-	 * This method uses the default connection time out of CONNECTON_TIMEOUT. If
-	 * <code>account</code> is null, "Mosso Style" authentication is assumed,
-	 * otherwise standard Cloud Files authentication is used.
-	 * 
-	 * @param username
-	 * @param password
-	 * @param authUrl
-	 */
-	public FilesClient(String username, String password, String authUrl) {
-		this(username, password, authUrl, null, FilesUtil.getIntProperty("connection_timeout"));
-	}
-
-	/**
-	 * Mosso-style authentication (No accounts).
-	 * 
-	 * @param username
-	 *            Your CloudFiles username
-	 * @param apiAccessKey
-	 *            Your CloudFiles API Access Key
-	 */
-	public FilesClient(String username, String apiAccessKey) {
-		this(username, apiAccessKey, null, null, FilesUtil.getIntProperty("connection_timeout"));
-		// lConnectionManagerogger.warn("LGV");
-		// logger.debug("LGV:" + client.getHttpConnectionManager());
-	}
-
-	/**
-	 * This method uses the default connection time out of CONNECTON_TIMEOUT and
-	 * username, password, and account from FilesUtil
-	 * 
-	 */
-	public FilesClient() {
-		this(FilesUtil.getProperty("username"), FilesUtil.getProperty("password"), null, FilesUtil.getProperty("account"), FilesUtil
-				.getIntProperty("connection_timeout"));
+		};
 	}
 
 	/**
@@ -242,20 +205,6 @@ public class FilesClient {
 	 */
 	public String getAccount() {
 		return account;
-	}
-
-	/**
-	 * Set the Account value and reassemble the Authentication URL.
-	 * 
-	 * @param account
-	 */
-	public void setAccount(String account) {
-		this.account = account;
-		if (account != null && account.length() > 0) {
-			this.authenticationURL = FilesUtil.getProperty("auth_url") + VERSION + "/" + account + FilesUtil.getProperty("auth_url_post");
-		} else {
-			this.authenticationURL = FilesUtil.getProperty("auth_url");
-		}
 	}
 
 	/**
@@ -273,8 +222,8 @@ public class FilesClient {
 		HttpGet method = new HttpGet(authenticationURL);
 		method.getParams().setIntParameter("http.socket.timeout", connectionTimeOut);
 
-		method.setHeader(FilesUtil.getProperty("auth_user_header", FilesConstants.X_STORAGE_USER_DEFAULT), username);
-		method.setHeader(FilesUtil.getProperty("auth_pass_header", FilesConstants.X_STORAGE_PASS_DEFAULT), password);
+		method.setHeader(FilesConstants.X_STORAGE_USER_DEFAULT, username);
+		method.setHeader(FilesConstants.X_STORAGE_PASS_DEFAULT, password);
 
 		FilesResponse response = new FilesResponse(client.execute(method));
 

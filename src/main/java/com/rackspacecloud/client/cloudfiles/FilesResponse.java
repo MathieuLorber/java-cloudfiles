@@ -4,15 +4,15 @@
 
 package com.rackspacecloud.client.cloudfiles;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.util.EntityUtils;
-import org.apache.http.HttpEntity;
 import org.apache.log4j.Logger;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 public class FilesResponse
 {
@@ -61,7 +61,7 @@ public class FilesResponse
      */
     public String getAuthToken ()
     {
-        return getResponseHeader(FilesUtil.getProperty("auth_token_name", FilesConstants.X_AUTH_TOKEN)).getValue();
+        return getResponseHeader(FilesConstants.X_AUTH_TOKEN).getValue();
     }
 
     /**
